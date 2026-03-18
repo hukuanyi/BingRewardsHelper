@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bing Rewards Helper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="icons/icon48.png" alt="Bing Rewards Helper">
+                <h1>Bing Rewards Helper</h1>
+            </div>
+            <div class="status" id="statusBadge">
+                <span class="status-dot"></span>
+                <span class="status-text">未启动</span>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <h2>今日统计</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🔍</div>
+                    <div class="stat-value" id="totalSearches">0</div>
+                    <div class="stat-label">总搜索次数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💻</div>
+                    <div class="stat-value" id="pcSearches">0</div>
+                    <div class="stat-label">电脑搜索</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📱</div>
+                    <div class="stat-value" id="mobileSearches">0</div>
+                    <div class="stat-label">移动搜索</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="pointsEarned">0</div>
+                    <div class="stat-label">预估积分</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <h2>控制面板</h2>
+            <div class="control-buttons">
+                <button id="startBtn" class="btn btn-primary">
+                    <span class="btn-icon">▶</span>
+                    开始搜索
+                </button>
+                <button id="stopBtn" class="btn btn-secondary" disabled>
+                    <span class="btn-icon">⏸</span>
+                    停止搜索
+                </button>
+                <button id="resetBtn" class="btn btn-outline">
+                    <span class="btn-icon">🔄</span>
+                    重置统计
+                </button>
+            </div>
+        </div>
+
+        <div class="tasks-section">
+            <h2>任务状态</h2>
+            <div class="tasks-grid">
+                <div class="task-card" id="signTaskCard">
+                    <div class="task-icon">📝</div>
+                    <div class="task-info">
+                        <div class="task-name">签入任务</div>
+                        <div class="task-status" id="signTaskStatus">未完成</div>
+                    </div>
+                </div>
+                <div class="task-card" id="readTaskCard">
+                    <div class="task-icon">📖</div>
+                    <div class="task-info">
+                        <div class="task-name">阅读任务</div>
+                        <div class="task-status" id="readTaskStatus">未完成</div>
+                    </div>
+                </div>
+                <div class="task-card" id="promoTaskCard">
+                    <div class="task-icon">🎁</div>
+                    <div class="task-info">
+                        <div class="task-name">活动任务</div>
+                        <div class="task-status" id="promoTaskStatus">未完成</div>
+                    </div>
+                </div>
+                <div class="task-card" id="searchTaskCard">
+                    <div class="task-icon">🔍</div>
+                    <div class="task-info">
+                        <div class="task-name">搜索任务</div>
+                        <div class="task-status" id="searchTaskStatus">未完成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="oauth-section">
+            <h2>🔐 OAuth 授权</h2>
+            <div class="oauth-status" id="oauthStatus">
+                <div class="oauth-item">
+                    <span>授权状态:</span>
+                    <span id="authStatus" class="status-badge">检查中...</span>
+                </div>
+            </div>
+            <div class="oauth-info" id="oauthInfo">
+                <p>⚠️ 签入、阅读、活动任务需要OAuth授权</p>
+                <p>💡 点击下方按钮完成Microsoft账户授权</p>
+            </div>
+            <div class="oauth-actions">
+                <button id="openAuthBtn" class="btn btn-primary btn-sm">
+                    🔑 打开授权页面
+                </button>
+                <button id="autoAuthBtn" class="btn btn-success btn-sm" style="display: none;">
+                    🤖 立即授权
+                </button>
+            </div>
+            <div id="authExpiredWarning" style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; display: none;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 16px;">⚠️</span>
+                    <div style="flex: 1;">
+                        <div style="font-size: 12px; font-weight: 600; color: #856404;">授权已失效</div>
+                        <div style="font-size: 11px; color: #856404;">检测到Token已过期或无效</div>
+                    </div>
+                    <button id="fixAuthBtn" class="btn btn-warning btn-sm" style="font-size: 11px; padding: 4px 8px;">
+                        🔄 修复授权
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2>设置</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="enabled">
+                        <span>启用自动搜索</span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="enableDailyLimit" checked>
+                        <span>启用每日限制</span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="autoResetDaily" checked>
+                        <span>自动每日重置</span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="notificationEnabled" checked>
+                        <span>启用通知</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-grid numeric-settings">
+                <div class="setting-item">
+                    <label>每日最大搜索次数</label>
+                    <input type="number" id="maxDailySearches" min="1" max="100" value="30">
+                </div>
+                <div class="setting-item">
+                    <label>任务间隔（秒）</label>
+                    <input type="number" id="searchInterval" min="10" max="300" value="30">
+                </div>
+                <div class="setting-item">
+                    <label>电脑搜索上限</label>
+                    <input type="number" id="pcSearchMax" min="1" max="50" value="30">
+                </div>
+                <div class="setting-item">
+                    <label>移动搜索上限</label>
+                    <input type="number" id="mobileSearchMax" min="1" max="50" value="20">
+                </div>
+            </div>
+
+            <div class="settings-grid">
+                <div class="setting-item" style="grid-column: span 2;">
+                    <label>搜索词模式</label>
+                    <select id="searchWordMode" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; background: white;">
+                        <option value="dictionary">词典模式（有意义词）</option>
+                        <option value="random">随机模式（无意义组合）</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-grid task-settings">
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="enableSignTaskConfig" checked>
+                        <span>启用签入任务</span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="enableReadTaskConfig" checked>
+                        <span>启用阅读任务</span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="enablePromoTaskConfig" checked>
+                        <span>启用活动任务</span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="enableSearchTaskConfig" checked>
+                        <span>启用搜索任务</span>
+                    </label>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 14px; color: #333;">⏰ 自动运行设置</h3>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="autoRunEnabled">
+                        <span>启用自动运行</span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>每日重置时间</label>
+                    <input type="time" id="autoRunResetTime" value="09:00" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                </div>
+            </div>
+            
+            <div style="margin-top: 10px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid #667eea;">
+                <div style="font-size: 12px; color: #666; margin-bottom: 8px; font-weight: 600;">自动运行时间段：</div>
+                <div id="timeSlotsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="time-slot" style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 12px; color: #666; min-width: 80px;">上午时段：</span>
+                        <input type="time" id="timeSlot1Start" value="10:00" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                        <span style="color: #999;">~</span>
+                        <input type="time" id="timeSlot1End" value="12:00" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                    </div>
+                    <div class="time-slot" style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 12px; color: #666; min-width: 80px;">下午时段：</span>
+                        <input type="time" id="timeSlot2Start" value="14:00" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                        <span style="color: #999;">~</span>
+                        <input type="time" id="timeSlot2End" value="16:00" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                    </div>
+                </div>
+                <div style="margin-top: 8px; font-size: 11px; color: #999;">
+                    💡 系统会在指定时间段内自动运行任务，每个时间段每日只运行一次
+                </div>
+            </div>
+
+            <button id="saveSettingsBtn" class="btn btn-success">
+                <span class="btn-icon">💾</span>
+                保存设置
+            </button>
+
+            <div id="wordPreview" style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid #667eea;">
+                <div style="font-size: 12px; color: #666; margin-bottom: 8px; font-weight: 600;">搜索词典预览：</div>
+                <div id="previewWords" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px;">人工智能</span>
+                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px;">健康饮食</span>
+                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px;">电影推荐</span>
+                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px;">学习方法</span>
+                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px;">健身计划</span>
+                </div>
+                <button id="refreshPreviewBtn" style="margin-top: 8px; padding: 6px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; font-size: 11px; cursor: pointer;">🔄 刷新预览</button>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <p class="info-text">
+                <strong>使用说明：</strong><br>
+                1. 点击"开始搜索"启动所有任务<br>
+                2. 任务间隔设置影响所有任务的执行间隔<br>
+                3. 建议间隔不低于30秒，避免请求过快<br>
+                4. 可以随时停止或重置统计信息<br>
+                5. 启用自动运行后，系统会在指定时间段自动运行任务
+            </p>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
