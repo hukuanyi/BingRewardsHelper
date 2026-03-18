@@ -2,6 +2,10 @@
 
 一个Microsoft Edge浏览器插件，自动完成Bing搜索任务以获取Rewards积分。
 
+主要是自己在用。
+需要感谢【潘钜森】大佬的脚本，链接：https://scriptcat.org/zh-CN/script-show-page/3947
+
+
 ## 功能特性
 
 - ✅ 自动执行Bing搜索任务
